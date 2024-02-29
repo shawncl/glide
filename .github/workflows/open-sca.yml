@@ -1,0 +1,25 @@
+name: OpenSCA Scan
+
+on: [push, pull_request]
+
+jobs:
+  opensca-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Docker
+      uses: docker/setup-buildx-action@v1
+
+    - name: Run OpenSCA Scan
+      run: |
+        echo "do opensca scan..."
+        docker run --rm -v ${{ github.workspace }}:/src opensca/opensca-cli -token ${{ secrets.SCA_TOKEN }} -path /src -out output.json
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: scan-results
+        path: output.json
